@@ -1,0 +1,531 @@
+try:
+    from IPython import get_ipython
+    ipy = get_ipython()
+    if ipy is not None:
+        ipy.run_line_magic("matplotlib", "inline")
+except Exception:
+    pass
+
+
+
+import os, re, time, random, tracemalloc
+from collections import Counter
+import warnings
+warnings.filterwarnings("ignore")
+
+import numpy as np
+import pandas as pd
+import matplotlib.pyplot as plt
+
+from sklearn.model_selection import GroupKFold
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import (
+    accuracy_score, f1_score, precision_score, recall_score,
+    roc_auc_score, roc_curve, confusion_matrix,
+    classification_report, precision_recall_curve, auc
+)
+from sklearn.calibration import calibration_curve
+from sklearn.decomposition import PCA
+from scipy.stats import ttest_rel, wilcoxon
+
+import tensorflow as tf
+from tensorflow.keras.utils import to_categorical
+from tensorflow.keras.models import Model
+from tensorflow.keras.layers import (
+    Input, Dense, Dropout, Flatten, Conv1D, MaxPooling1D,
+    concatenate, LayerNormalization, Activation, Multiply, Add, Lambda
+)
+from tensorflow.keras.callbacks import EarlyStopping, ReduceLROnPlateau
+
+import pennylane as qml
+from pennylane.qnn import KerasLayer
+import pywt
+
+# ---------------- Reproducibility ----------------
+SEED = 42
+os.environ["PYTHONHASHSEED"] = str(SEED)
+random.seed(SEED); np.random.seed(SEED); tf.random.set_seed(SEED)
+
+def safe_filename(name: str):
+    s = re.sub(r'[<>:\"/\\|?*\n\r\t]+', "_", str(name))
+    s = re.sub(r"\s+", "_", s).strip("_")
+    return s
+
+# ============================================
+# 1) Load data — subject_id = first column
+# ============================================
+df = pd.read_csv("abc.csv")
+subject_col = df.columns[0]                     # e.g. 'Unnamed'
+df["subject_id"] = df[subject_col].astype(str)  # for grouping
+
+assert "y" in df.columns, "CSV must contain a 'y' column."
+# 1 → seizure, 0 → non-seizure (merged classes 2,3,4,5)
+df["y"] = df["y"].apply(lambda x: 0 if x in [2,3,4,5] else 1).astype(int)
+
+feature_cols = [c for c in df.columns if c not in [subject_col, "subject_id", "y"]]
+X_df  = df[feature_cols].copy()
+y_int = df["y"].values.astype(int)
+y_cat = to_categorical(y_int, num_classes=2)
+groups = df["subject_id"].values
+
+print(f"Samples={len(df)} | Features={len(feature_cols)} | Unique subjects={pd.Series(groups).nunique()}")
+
+# ============================================
+# 2) Feature builders (RAW, DWT, DWT-DENOISE, MSPCA-style FIXED)
+# ============================================
+def _pad_trunc(vec, target_dim=500):
+    if len(vec) < target_dim:
+        return np.pad(vec, (0, target_dim-len(vec)))
+    else:
+        return vec[:target_dim]
+
+def dwt_features(X_df, wavelet='db4', level=3, target_dim=500):
+    feats = []
+    for i in range(len(X_df)):
+        coeffs = pywt.wavedec(X_df.iloc[i].values.astype(float), wavelet, level=level)
+        v = np.concatenate([np.real(c) for c in coeffs])
+        feats.append(_pad_trunc(v, target_dim))
+    return np.asarray(feats, dtype=np.float32)
+
+def dwt_features_denoised(X_df, wavelet='db4', level=3, target_dim=500, mode='soft'):
+    feats = []
+    for i in range(len(X_df)):
+        x = X_df.iloc[i].values.astype(float)
+        coeffs = pywt.wavedec(x, wavelet, level=level)
+        sigma = np.median(np.abs(coeffs[-1]))/0.6745 + 1e-9
+        lam = sigma*np.sqrt(2*np.log(len(x)))
+        coeffs = [pywt.threshold(c, lam, mode=mode) for c in coeffs]
+        x_dn = pywt.waverec(coeffs, wavelet)[:len(x)]
+        coeffs2 = pywt.wavedec(x_dn, wavelet, level=level)
+        v = np.concatenate([np.real(c) for c in coeffs2])
+        feats.append(_pad_trunc(v, target_dim))
+    return np.asarray(feats, dtype=np.float32)
+
+def mspca_style_features(X_df, wavelet='db4', level=3, target_dim=500, keep_k=3):
+    """
+    FIXED: Safely choose the number of PCA components per band (at most 1).
+    This is a light MSPCA-like denoising strategy; it is not a full MSPCA.
+    """
+    feats = []
+    for i in range(len(X_df)):
+        x = X_df.iloc[i].values.astype(float)
+
+        coeffs = pywt.wavedec(x, wavelet, level=level)
+        denoised_coeffs = []
+        for band in coeffs:
+            b = band.astype(float)
+            b2 = b.reshape(-1, 1)  # (n_samples, 1)
+            n_samples, n_features = b2.shape  # n_features = 1
+            n_comp = min(keep_k, n_features, n_samples)  # at most 1
+
+            if n_comp >= 1 and n_samples >= 2:
+                pca = PCA(n_components=n_comp, svd_solver='full', random_state=SEED)
+                z = pca.fit_transform(b2)
+                b_rec = pca.inverse_transform(z).ravel()
+            else:
+                b_rec = b  # do not modify if too few samples/components
+
+            denoised_coeffs.append(b_rec)
+
+        x_dn = pywt.waverec(denoised_coeffs, wavelet)[:len(x)]
+        coeffs2 = pywt.wavedec(x_dn, wavelet, level=level)
+        v = np.concatenate([np.real(c) for c in coeffs2])
+        feats.append(_pad_trunc(v, target_dim))
+
+    return np.asarray(feats, dtype=np.float32)
+
+# RAW
+X_RAW = X_df.values.astype(np.float32)
+
+# DWT variants (only db4,L3 will be used in runs, others kept for possible ablations)
+X_DWT_db4_L3  = dwt_features(X_df, 'db4',  level=3, target_dim=500)
+X_DWT_db4_L2  = dwt_features(X_df, 'db4',  level=2, target_dim=500)
+X_DWT_db4_L4  = dwt_features(X_df, 'db4',  level=4, target_dim=500)
+X_DWT_db2_L3  = dwt_features(X_df, 'db2',  level=3, target_dim=500)
+X_DWT_sym4_L3 = dwt_features(X_df, 'sym4', level=3, target_dim=500)
+X_DWT_coif1_L3= dwt_features(X_df, 'coif1',level=3, target_dim=500)
+
+# DWT-DENOISE (db4, L3)
+X_DWT_DENOISE_db4_L3 = dwt_features_denoised(X_df, 'db4', level=3, target_dim=500, mode='soft')
+
+# MSPCA-style (db4, L3, keep_k=3) — FIXED
+X_MSPCA_db4_L3_k3 = mspca_style_features(X_df, 'db4', level=3, target_dim=500, keep_k=3)
+
+# ============================================
+# 3) Model builders: CNN / IQCNN / Forked (gated)
+# ============================================
+def cnn_branch(inp):
+    x = Conv1D(32, 3, activation='relu')(inp)
+    x = MaxPooling1D(2)(x)
+    x = Flatten()(x)
+    x = Dense(64, activation='relu')(x)
+    return x
+
+def quantum_branch(inp, n_qubits=8, depth=8, backend="default.qubit"):
+    dev = qml.device(backend, wires=n_qubits)
+
+    @qml.qnode(dev, interface="tf")
+    def qc(inputs, weights):
+        qml.AngleEmbedding(inputs, wires=range(n_qubits))
+        qml.StronglyEntanglingLayers(weights, wires=range(n_qubits))
+        return [qml.expval(qml.PauliZ(i)) for i in range(n_qubits)]
+
+    qlayer = KerasLayer(qc, {"weights": (depth, n_qubits, 3)}, output_dim=n_qubits)
+    x = Flatten()(inp)
+    x = Dense(n_qubits)(x)
+    x = qlayer(x)
+    x = Dense(64, activation='relu')(x)
+    x = Dropout(0.30)(x)
+    return x
+
+def gated_fusion(x1, x2):
+    g1 = Dense(1)(x1)
+    g2 = Dense(1)(x2)
+    g  = concatenate([g1, g2])
+    g  = Activation('softmax')(g)  # [alpha, beta]
+    a1 = Lambda(lambda t: t[:, 0:1])(g)
+    a2 = Lambda(lambda t: t[:, 1:2])(g)
+    return Add()([Multiply()([a1, x1]), Multiply()([a2, x2])])
+
+def make_model(model_type="forked", input_shape=(500,1),
+               fusion="gated", postnorm=True,
+               n_qubits=8, depth=8, backend="default.qubit", lr=1e-4):
+    inp = Input(shape=input_shape)
+
+    if model_type == "cnn":
+        x = cnn_branch(inp)
+        if postnorm:
+            x = LayerNormalization()(x)
+        x = Dense(64, activation='relu')(x)
+        x = Dropout(0.30)(x)
+        out = Dense(2, activation='softmax')(x)
+
+    elif model_type == "iqcnn":
+        x = quantum_branch(inp, n_qubits, depth, backend)
+        if postnorm:
+            x = LayerNormalization()(x)
+        x = Dense(64, activation='relu')(x)
+        x = Dropout(0.30)(x)
+        out = Dense(2, activation='softmax')(x)
+
+    else:  # forked (parallel)
+        x1 = cnn_branch(inp)
+        x1 = LayerNormalization()(x1)
+        x2 = quantum_branch(inp, n_qubits, depth, backend)
+        x2 = LayerNormalization()(x2)
+        x  = gated_fusion(x1, x2) if fusion == "gated" else concatenate([x1, x2])
+        if postnorm:
+            x = LayerNormalization()(x)
+        x = Dense(64, activation='relu')(x)
+        x = Dropout(0.30)(x)
+        out = Dense(2, activation='softmax')(x)
+
+    m = Model(inp, out)
+    m.compile(
+        optimizer=tf.keras.optimizers.Adam(lr),
+        loss='categorical_crossentropy',
+        metrics=['accuracy']
+    )
+    return m
+
+# ============================================
+# 4) CV runner — per-fold + MEAN summaries (ROC±std, Calibration, MisIDs)
+# ============================================
+def run_cv(model_kwargs, Xmat, y_int, y_onehot, groups,
+           epochs=30, batch=32, verbose=0, title="Model",
+           show_pr=False, save_figs=False,
+           list_misclassified=True, show_calibration=True):
+
+    mean_fpr = np.linspace(0, 1, 200)
+    aucs, f1s, accs, precs, recs, cms = [], [], [], [], [], []
+    tprs, times, peaks = [], [], []
+    mis_counter = Counter()
+    mis_by_fold = []
+
+    cal_bins = np.linspace(0.0, 1.0, 11)  # 10 bins
+    cal_frac_matrix, cal_pred_matrix = [], []
+
+    plt.figure(figsize=(7, 6))
+
+    for fold, (tr, te) in enumerate(GroupKFold(n_splits=5).split(Xmat, y_int, groups), 1):
+        scaler = StandardScaler().fit(Xmat[tr])
+        Xtr = scaler.transform(Xmat[tr])[:, :, None]
+        Xte = scaler.transform(Xmat[te])[:, :, None]
+
+        m = make_model(input_shape=(Xtr.shape[1], 1), **model_kwargs)
+        cbs = [
+            EarlyStopping(monitor='val_loss', patience=6, restore_best_weights=True),
+            ReduceLROnPlateau(monitor="val_loss", factor=0.5, patience=3, verbose=0)
+        ]
+
+        tracemalloc.start()
+        t0 = time.time()
+        m.fit(
+            Xtr, y_onehot[tr],
+            validation_split=0.1,
+            epochs=epochs,
+            batch_size=batch,
+            verbose=verbose,
+            callbacks=cbs
+        )
+        t_elapsed = time.time() - t0
+        current, peak = tracemalloc.get_traced_memory()
+        tracemalloc.stop()
+        times.append(t_elapsed)
+        peaks.append(peak / 1e6)
+
+        y_prob = m.predict(Xte, verbose=0)[:, 1]
+        y_pred = (y_prob >= 0.5).astype(int)
+        y_true = y_int[te]
+
+        # metrics
+        accs.append(accuracy_score(y_true, y_pred))
+        f1s.append(f1_score(y_true, y_pred))
+        precs.append(precision_score(y_true, y_pred))
+        recs.append(recall_score(y_true, y_pred))
+        auc_val = roc_auc_score(y_true, y_prob)
+        aucs.append(auc_val)
+        cm = confusion_matrix(y_true, y_pred)
+        cms.append(cm)
+
+        print(
+            f"\n[Fold {fold}] ACC={accs[-1]:.4f} F1={f1s[-1]:.4f} "
+            f"AUC={aucs[-1]:.4f} PREC={precs[-1]:.4f} REC={recs[-1]:.4f} "
+            f"| Time={t_elapsed:.1f}s PeakMem={peaks[-1]:.1f}MB"
+        )
+        print(classification_report(y_true, y_pred, digits=4))
+        print("CM:\n", cm)
+
+        # Misclassified subject_ids
+        if list_misclassified:
+            wrong_local = np.where(y_pred != y_true)[0]
+            wrong_subjects = df.iloc[te].iloc[wrong_local]["subject_id"].tolist()
+            mis_by_fold.append(wrong_subjects)
+            mis_counter.update(wrong_subjects)
+            print("Misclassified subject_ids:", wrong_subjects if wrong_subjects else "—")
+
+        # ROC (fold)
+        fpr, tpr, _ = roc_curve(y_true, y_prob)
+        tpr_i = np.interp(mean_fpr, fpr, tpr)
+        tpr_i[0] = 0.0
+        tprs.append(tpr_i)
+        plt.plot(fpr, tpr, lw=1, alpha=0.35, label=f'Fold {fold} (AUC={auc_val:.2f})')
+
+        # Calibration (fold)
+        if show_calibration:
+            inds = np.digitize(y_prob, cal_bins) - 1
+            frac_pos, mean_pred = [], []
+            for b in range(len(cal_bins) - 1):
+                mask = inds == b
+                if np.any(mask):
+                    frac_pos.append(np.mean(y_true[mask]))
+                    mean_pred.append(np.mean(y_prob[mask]))
+                else:
+                    frac_pos.append(np.nan)
+                    mean_pred.append(np.nan)
+            cal_frac_matrix.append(frac_pos)
+            cal_pred_matrix.append(mean_pred)
+
+            pt, pp = calibration_curve(y_true, y_prob, n_bins=10, strategy='quantile')
+            plt.figure()
+            plt.plot(pp, pt, marker='o')
+            plt.plot([0, 1], [0, 1], '--', color='gray')
+            plt.xlabel("Predicted probability")
+            plt.ylabel("Observed frequency")
+            plt.title(f"Calibration — {title} F{fold}")
+            if save_figs:
+                plt.savefig(f"CAL_{safe_filename(title)}_F{fold}.png", dpi=300, bbox_inches="tight")
+            plt.show()
+
+    # ========= MEAN ROC + ±1 STD =========
+    tprs_arr = np.vstack(tprs)              # (n_folds, 200)
+    mean_tpr = tprs_arr.mean(axis=0)
+    mean_tpr[-1] = 1.0
+    std_tpr  = tprs_arr.std(axis=0)
+    mean_auc = float(np.mean(aucs))
+    std_auc = float(np.std(aucs))
+
+    plt.plot(mean_fpr, mean_tpr, lw=2, label=f"Mean ROC (AUC={mean_auc:.3f}±{std_auc:.3f})")
+    tpr_upper = np.clip(mean_tpr + std_tpr, 0, 1)
+    tpr_lower = np.clip(mean_tpr - std_tpr, 0, 1)
+    plt.fill_between(mean_fpr, tpr_lower, tpr_upper, alpha=0.2, label="±1 std")
+
+    plt.plot([0, 1], [0, 1], '--', color='gray')
+    plt.xlabel("False Positive Rate")
+    plt.ylabel("True Positive Rate")
+    plt.title(f"ROC — {title}")
+    plt.legend(loc="lower right")
+    plt.grid(True)
+    if save_figs:
+        plt.savefig(f"ROC_MEAN_{safe_filename(title)}.png", dpi=600, bbox_inches="tight")
+    plt.show()
+    print(f"Mean ROC AUC = {mean_auc:.4f} ± {std_auc:.4f}")
+
+    # ========= MEAN CALIBRATION =========
+    if show_calibration and len(cal_frac_matrix) > 0:
+        cal_frac_matrix = np.array(cal_frac_matrix, dtype=float)   # (folds, 10)
+        cal_pred_matrix = np.array(cal_pred_matrix, dtype=float)   # (folds, 10)
+        with np.errstate(invalid='ignore'):
+            mean_frac = np.nanmean(cal_frac_matrix, axis=0)
+            mean_pred = np.nanmean(cal_pred_matrix, axis=0)
+        bin_centers = (cal_bins[:-1] + cal_bins[1:]) / 2
+        plt.figure()
+        plt.plot(bin_centers, mean_frac, marker='o', label="Mean calibration")
+        plt.plot([0, 1], [0, 1], '--', color='gray', label="Perfect")
+        plt.xlabel("Predicted probability (bin centers)")
+        plt.ylabel("Observed frequency")
+        plt.title(f"Calibration — MEAN ({title})")
+        plt.legend()
+        plt.grid(True)
+        if save_figs:
+            plt.savefig(f"CAL_MEAN_{safe_filename(title)}.png", dpi=600, bbox_inches="tight")
+        plt.show()
+    else:
+        mean_frac = None
+        mean_pred = None
+        bin_centers = None
+
+    # ========= SUMMARY METRICS =========
+    avg_cm = np.round(np.mean(cms, axis=0)).astype(int)
+    print("\n===== SUMMARY =====")
+    print(f"ACC : {np.mean(accs):.4f} ± {np.std(accs):.4f}")
+    print(f"F1  : {np.mean(f1s):.4f} ± {np.std(f1s):.4f}")
+    print(f"AUC : {mean_auc:.4f} ± {std_auc:.4f}")
+    print(f"PREC: {np.mean(precs):.4f} ± {np.std(precs):.4f}")
+    print(f"REC : {np.mean(recs):.4f} ± {np.std(recs):.4f}")
+    print("Average Confusion Matrix:\n", avg_cm)
+
+    # ========= Misclassified Subjects =========
+    if list_misclassified:
+        uniq = len(mis_counter)
+        print(f"\n[Misclassified] Unique subject_ids across folds: {uniq}")
+        if uniq > 0:
+            top10 = mis_counter.most_common(10)
+            print("Top-10 most frequent misclassified subject_ids (id, count):")
+            for sid, cnt in top10:
+                print(f"  {sid}: {cnt}")
+
+    return dict(
+        AUC_folds=aucs, F1_folds=f1s, Acc_folds=accs, Prec_folds=precs, Rec_folds=recs,
+        Avg_CM=avg_cm, Time_folds=times, MemMB_folds=peaks,
+        Mis_by_fold=mis_by_fold, Mis_counter=mis_counter,
+        Calib_bins=cal_bins,
+        Calib_mean_frac=(mean_frac if show_calibration else None),
+        Calib_mean_pred=(mean_pred if show_calibration else None),
+        Calib_centers=(bin_centers if show_calibration else None)
+    )
+
+# ============================================
+# 5) Main runs (DWT-based, recommended)
+# ============================================
+def run_and_collect(title, kw, Xmat, save_figs=False):
+    print(f"\n=== {title} ===")
+    return run_cv(
+        kw, Xmat, y_int, y_cat, groups,
+        epochs=30, batch=32, title=title,
+        show_pr=False, save_figs=save_figs,
+        list_misclassified=True, show_calibration=True
+    )
+
+# Main DWT-based runs
+res_dwt_cnn      = run_and_collect(
+    "DWT(db4,L3) | CNN",
+    dict(model_type="cnn"),
+    X_DWT_db4_L3, save_figs=False
+)
+
+res_dwt_iqcnn    = run_and_collect(
+    "DWT(db4,L3) | IQCNN",
+    dict(model_type="iqcnn", n_qubits=8, depth=8),
+    X_DWT_db4_L3, save_figs=False
+)
+
+res_dwt_f_gated  = run_and_collect(
+    "DWT(db4,L3) | IQCNNNet | gated",
+    dict(model_type="forked", fusion="gated", n_qubits=8, depth=8),
+    X_DWT_db4_L3, save_figs=False
+)
+
+# Denoising ablations
+res_dwt_denoise  = run_and_collect(
+    "DWT-DENOISE(db4,L3) | IQCNNNet | gated",
+    dict(model_type="forked", fusion="gated", n_qubits=8, depth=8),
+    X_DWT_DENOISE_db4_L3, save_figs=False
+)
+
+res_mspca        = run_and_collect(
+    "MSPCA-style(db4,L3,k=3) | IQCNNNet | gated",
+    dict(model_type="forked", fusion="gated", n_qubits=8, depth=8),
+    X_MSPCA_db4_L3_k3, save_figs=False
+)
+
+# RAW reference
+res_raw_cnn      = run_and_collect(
+    "RAW | CNN",
+    dict(model_type="cnn"),
+    X_RAW, save_figs=False
+)
+
+# ============================================
+# 6) Statistical tests — example pairs (AUC over folds)
+# ============================================
+def sig_tests(resA, resB, nameA, nameB, which="AUC_folds"):
+    A = np.array(resA[which])
+    B = np.array(resB[which])
+    t, p  = ttest_rel(A, B)
+    w, pw = wilcoxon(A, B, zero_method="wilcox")
+    print(f"\n== {nameA} vs {nameB} | {which.replace('_folds','').upper()} ==")
+    print(f"Paired t-test: t={t:.3f}, p={p:.4f} | Wilcoxon: W={w:.3f}, p={pw:.4f}")
+
+# Forked(gated)-DWT vs CNN-DWT
+sig_tests(
+    res_dwt_f_gated, res_dwt_cnn,
+    "Forked(gated)-DWT", "CNN-DWT",
+    which="AUC_folds"
+)
+
+# Forked(gated)-DWT vs IQCNN-DWT
+sig_tests(
+    res_dwt_f_gated, res_dwt_iqcnn,
+    "Forked(gated)-DWT", "IQCNN-DWT",
+    which="AUC_folds"
+)
+
+# Forked(gated)-DWT vs Forked(gated)-DWT-DENOISE
+sig_tests(
+    res_dwt_f_gated, res_dwt_denoise,
+    "Forked(gated)-DWT", "Forked(gated)-DWT-DENOISE",
+    which="AUC_folds"
+)
+
+# Forked(gated)-DWT vs Forked(gated)-MSPCA
+sig_tests(
+    res_dwt_f_gated, res_mspca,
+    "Forked(gated)-DWT", "Forked(gated)-MSPCA",
+    which="AUC_folds"
+)
+
+# ============================================
+# 7) Global Summary Table (means ± std)
+# ============================================
+def summarize_model(name, res):
+    return dict(
+        Model=name,
+        ACC = f"{np.mean(res['Acc_folds']):.4f} ± {np.std(res['Acc_folds']):.4f}",
+        F1  = f"{np.mean(res['F1_folds']):.4f} ± {np.std(res['F1_folds']):.4f}",
+        AUC = f"{np.mean(res['AUC_folds']):.4f} ± {np.std(res['AUC_folds']):.4f}",
+        PREC= f"{np.mean(res['Prec_folds']):.4f} ± {np.std(res['Prec_folds']):.4f}",
+        REC = f"{np.mean(res['Rec_folds']):.4f} ± {np.std(res['Rec_folds']):.4f}",
+    )
+
+summary_rows = [
+    summarize_model("DWT(db4,L3) | CNN", res_dwt_cnn),
+    summarize_model("DWT(db4,L3) | IQCNN", res_dwt_iqcnn),
+    summarize_model("DWT(db4,L3) | IQCNNNet (gated)", res_dwt_f_gated),
+    summarize_model("DWT-DENOISE(db4,L3) | IQCNNNet (gated)", res_dwt_denoise),
+    summarize_model("MSPCA-style(db4,L3,k=3) | IQCNNNet (gated)", res_mspca),
+    summarize_model("RAW | CNN", res_raw_cnn),
+]
+
+print("\n===== GLOBAL SUMMARY (Means ± Std over 5 folds) =====")
+print(pd.DataFrame(summary_rows, columns=["Model", "ACC", "F1", "AUC", "PREC", "REC"]))
