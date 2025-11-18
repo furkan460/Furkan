@@ -1,0 +1,683 @@
+Samples=2070 | Features=178 | Unique subjects=2070
+
+=== DWT(db4,L3) | CNN ===
+
+[Fold 1] ACC=0.9638 F1=0.9007 AUC=0.9925 PREC=0.9067 REC=0.8947 | Time=8.0s PeakMem=12.4MB
+              precision    recall  f1-score   support
+
+           0     0.9764    0.9793    0.9778       338
+           1     0.9067    0.8947    0.9007        76
+
+    accuracy                         0.9638       414
+   macro avg     0.9415    0.9370    0.9393       414
+weighted avg     0.9636    0.9638    0.9637       414
+
+CM:
+ [[331   7]
+ [  8  68]]
+Misclassified subject_ids: ['X3.V1.884', 'X7.V1.814', 'X7.V1.504', 'X22.V1.834', 'X3.V1.141', 'X3.V1.317', 'X19.V1.412', 'X4.V1.616', 'X17.V1.751', 'X20.V1.381', 'X19.V1.834', 'X21.V1.753', 'X2.V1.824', 'X19.V1.361', 'X1.V1.516']
+
+
+
+[Fold 2] ACC=0.9614 F1=0.9012 AUC=0.9946 PREC=0.9733 REC=0.8391 | Time=8.9s PeakMem=11.0MB
+              precision    recall  f1-score   support
+
+           0     0.9587    0.9939    0.9760       327
+           1     0.9733    0.8391    0.9012        87
+
+    accuracy                         0.9614       414
+   macro avg     0.9660    0.9165    0.9386       414
+weighted avg     0.9618    0.9614    0.9603       414
+
+CM:
+ [[325   2]
+ [ 14  73]]
+Misclassified subject_ids: ['X6.V1.374', 'X15.V1.154', 'X4.V1.204', 'X4.V1.954', 'X22.V1.824', 'X13.V1.884', 'X10.V1.384', 'X11.V1.884', 'X21.V1.554', 'X11.V1.734', 'X9.V1.284', 'X4.V1.894', 'X12.V1.704', 'X1.V1.593', 'X17.V1.444', 'X9.V1.361']
+
+
+
+[Fold 3] ACC=0.9517 F1=0.8958 AUC=0.9935 PREC=0.9053 REC=0.8866 | Time=9.3s PeakMem=11.0MB
+              precision    recall  f1-score   support
+
+           0     0.9655    0.9716    0.9686       317
+           1     0.9053    0.8866    0.8958        97
+
+    accuracy                         0.9517       414
+   macro avg     0.9354    0.9291    0.9322       414
+weighted avg     0.9514    0.9517    0.9515       414
+
+CM:
+ [[308   9]
+ [ 11  86]]
+Misclassified subject_ids: ['X23.V1.593', 'X1.V1.204', 'X3.V1.734', 'X20.V1.723', 'X7.V1.317', 'X17.V1.764', 'X22.V1.371', 'X9.V1.914', 'X9.V1.723', 'X6.V1.734', 'X19.V1.954', 'X9.V1.704', 'X7.V1.914', 'X1.V1.444', 'X20.V1.384', 'X12.V1.931', 'X5.V1.504', 'X9.V1.764', 'X4.V1.991', 'X14.V1.814']
+
+
+
+[Fold 4] ACC=0.9493 F1=0.8444 AUC=0.9858 PREC=0.8636 REC=0.8261 | Time=12.8s PeakMem=11.0MB
+              precision    recall  f1-score   support
+
+           0     0.9655    0.9739    0.9697       345
+           1     0.8636    0.8261    0.8444        69
+
+    accuracy                         0.9493       414
+   macro avg     0.9146    0.9000    0.9071       414
+weighted avg     0.9485    0.9493    0.9488       414
+
+CM:
+ [[336   9]
+ [ 12  57]]
+Misclassified subject_ids: ['X5.V1.593', 'X4.V1.134', 'X20.V1.203', 'X10.V1.134', 'X15.V1.814', 'X13.V1.834', 'X16.V1.174', 'X2.V1.814', 'X12.V1.723', 'X9.V1.401', 'X13.V1.144', 'X9.V1.161', 'X13.V1.317', 'X3.V1.704', 'X22.V1.317', 'X22.V1.734', 'X11.V1.161', 'X5.V1.412', 'X8.V1.154', 'X15.V1.174', 'X7.V1.624']
+
+
+
+[Fold 5] ACC=0.9589 F1=0.8982 AUC=0.9856 PREC=0.9259 REC=0.8721 | Time=9.8s PeakMem=10.9MB
+              precision    recall  f1-score   support
+
+           0     0.9670    0.9817    0.9743       328
+           1     0.9259    0.8721    0.8982        86
+
+    accuracy                         0.9589       414
+   macro avg     0.9464    0.9269    0.9362       414
+weighted avg     0.9584    0.9589    0.9585       414
+
+CM:
+ [[322   6]
+ [ 11  75]]
+Misclassified subject_ids: ['X6.V1.203', 'X23.V1.734', 'X22.V1.144', 'X10.V1.374', 'X17.V1.634', 'X9.V1.774', 'X22.V1.853', 'X17.V1.814', 'X13.V1.154', 'X19.V1.504', 'X2.V1.114', 'X4.V1.884', 'X23.V1.154', 'X2.V1.593', 'X16.V1.414', 'X12.V1.317', 'X2.V1.954']
+
+
+
+Mean ROC AUC = 0.9904 ± 0.0039
+
+
+===== SUMMARY =====
+ACC : 0.9570 ± 0.0056
+F1  : 0.8881 ± 0.0219
+AUC : 0.9904 ± 0.0039
+PREC: 0.9150 ± 0.0356
+REC : 0.8637 ± 0.0268
+Average Confusion Matrix:
+ [[324   7]
+ [ 11  72]]
+
+[Misclassified] Unique subject_ids across folds: 89
+Top-10 most frequent misclassified subject_ids (id, count):
+  X3.V1.884: 1
+  X7.V1.814: 1
+  X7.V1.504: 1
+  X22.V1.834: 1
+  X3.V1.141: 1
+  X3.V1.317: 1
+  X19.V1.412: 1
+  X4.V1.616: 1
+  X17.V1.751: 1
+  X20.V1.381: 1
+
+=== DWT(db4,L3) | IQCNN ===
+
+[Fold 1] ACC=0.9203 F1=0.7660 AUC=0.9661 PREC=0.8308 REC=0.7105 | Time=141.5s PeakMem=53.8MB
+              precision    recall  f1-score   support
+
+           0     0.9370    0.9675    0.9520       338
+           1     0.8308    0.7105    0.7660        76
+
+    accuracy                         0.9203       414
+   macro avg     0.8839    0.8390    0.8590       414
+weighted avg     0.9175    0.9203    0.9178       414
+
+CM:
+ [[327  11]
+ [ 22  54]]
+Misclassified subject_ids: ['X7.V1.134', 'X17.V1.224', 'X5.V1.274', 'X10.V1.717', 'X7.V1.504', 'X6.V1.711', 'X22.V1.834', 'X15.V1.723', 'X13.V1.874', 'X1.V1.684', 'X14.V1.544', 'X3.V1.317', 'X19.V1.891', 'X17.V1.116', 'X2.V1.634', 'X8.V1.25', 'X19.V1.412', 'X10.V1.861', 'X20.V1.174', 'X8.V1.684', 'X14.V1.354', 'X19.V1.834', 'X1.V1.764', 'X21.V1.753', 'X18.V1.23', 'X23.V1.702', 'X2.V1.824', 'X17.V1.554', 'X3.V1.284', 'X8.V1.641', 'X15.V1.29', 'X8.V1.316', 'X1.V1.516']
+
+[Fold 2] ACC=0.9130 F1=0.7692 AUC=0.9468 PREC=0.8696 REC=0.6897 | Time=188.5s PeakMem=53.7MB
+              precision    recall  f1-score   support
+
+           0     0.9217    0.9725    0.9464       327
+           1     0.8696    0.6897    0.7692        87
+
+    accuracy                         0.9130       414
+   macro avg     0.8957    0.8311    0.8578       414
+weighted avg     0.9108    0.9130    0.9092       414
+
+CM:
+ [[318   9]
+ [ 27  60]]
+Misclassified subject_ids: ['X23.V1.394', 'X6.V1.374', 'X13.V1.224', 'X15.V1.154', 'X21.V1.592', 'X13.V1.412', 'X3.V1.624', 'X4.V1.204', 'X4.V1.954', 'X23.V1.354', 'X15.V1.492', 'X22.V1.824', 'X5.V1.761', 'X9.V1.661', 'X10.V1.354', 'X13.V1.884', 'X10.V1.384', 'X21.V1.554', 'X11.V1.734', 'X9.V1.871', 'X10.V1.917', 'X9.V1.284', 'X20.V1.711', 'X4.V1.694', 'X1.V1.824', 'X5.V1.774', 'X12.V1.704', 'X1.V1.593', 'X4.V1.861', 'X20.V1.134', 'X8.V1.624', 'X14.V1.717', 'X20.V1.617', 'X23.V1.824', 'X17.V1.444', 'X4.V1.634']
+
+[Fold 3] ACC=0.9130 F1=0.7955 AUC=0.9535 PREC=0.8861 REC=0.7216 | Time=141.1s PeakMem=53.8MB
+              precision    recall  f1-score   support
+
+           0     0.9194    0.9716    0.9448       317
+           1     0.8861    0.7216    0.7955        97
+
+    accuracy                         0.9130       414
+   macro avg     0.9027    0.8466    0.8701       414
+weighted avg     0.9116    0.9130    0.9098       414
+
+CM:
+ [[308   9]
+ [ 27  70]]
+Misclassified subject_ids: ['X7.V1.874', 'X23.V1.593', 'X22.V1.744', 'X22.V1.516', 'X22.V1.954', 'X1.V1.204', 'X3.V1.734', 'X20.V1.723', 'X7.V1.317', 'X17.V1.764', 'X9.V1.914', 'X9.V1.723', 'X6.V1.734', 'X19.V1.954', 'X20.V1.104', 'X14.V1.316', 'X23.V1.23', 'X10.V1.734', 'X19.V1.584', 'X20.V1.621', 'X20.V1.844', 'X1.V1.444', 'X13.V1.694', 'X7.V1.144', 'X22.V1.724', 'X20.V1.384', 'X23.V1.29', 'X5.V1.504', 'X16.V1.544', 'X2.V1.761', 'X8.V1.694', 'X19.V1.634', 'X14.V1.694', 'X9.V1.764', 'X7.V1.384', 'X14.V1.814']
+
+[Fold 4] ACC=0.9227 F1=0.7612 AUC=0.9588 PREC=0.7846 REC=0.7391 | Time=213.9s PeakMem=53.8MB
+              precision    recall  f1-score   support
+
+           0     0.9484    0.9594    0.9539       345
+           1     0.7846    0.7391    0.7612        69
+
+    accuracy                         0.9227       414
+   macro avg     0.8665    0.8493    0.8575       414
+weighted avg     0.9211    0.9227    0.9218       414
+
+CM:
+ [[331  14]
+ [ 18  51]]
+Misclassified subject_ids: ['X5.V1.593', 'X4.V1.134', 'X20.V1.203', 'X9.V1.3', 'X10.V1.134', 'X15.V1.814', 'X6.V1.32', 'X13.V1.834', 'X18.V1.764', 'X6.V1.994', 'X7.V1.952', 'X1.V1.144', 'X16.V1.174', 'X2.V1.814', 'X10.V1.29', 'X1.V1.794', 'X4.V1.29', 'X5.V1.29', 'X23.V1.763', 'X13.V1.144', 'X13.V1.317', 'X3.V1.704', 'X23.V1.791', 'X20.V1.454', 'X22.V1.317', 'X7.V1.324', 'X22.V1.734', 'X5.V1.412', 'X5.V1.634', 'X8.V1.154', 'X3.V1.814', 'X21.V1.854']
+
+[Fold 5] ACC=0.9106 F1=0.7582 AUC=0.9579 PREC=0.8657 REC=0.6744 | Time=181.2s PeakMem=53.8MB
+              precision    recall  f1-score   support
+
+           0     0.9193    0.9726    0.9452       328
+           1     0.8657    0.6744    0.7582        86
+
+    accuracy                         0.9106       414
+   macro avg     0.8925    0.8235    0.8517       414
+weighted avg     0.9082    0.9106    0.9063       414
+
+CM:
+ [[319   9]
+ [ 28  58]]
+Misclassified subject_ids: ['X8.V1.711', 'X3.V1.694', 'X21.V1.634', 'X23.V1.734', 'X6.V1.303', 'X16.V1.144', 'X11.V1.316', 'X1.V1.817', 'X10.V1.412', 'X10.V1.374', 'X5.V1.641', 'X17.V1.634', 'X12.V1.941', 'X3.V1.134', 'X7.V1.554', 'X15.V1.817', 'X20.V1.204', 'X9.V1.774', 'X14.V1.204', 'X17.V1.814', 'X13.V1.154', 'X19.V1.534', 'X4.V1.384', 'X12.V1.394', 'X8.V1.861', 'X19.V1.504', 'X4.V1.884', 'X23.V1.154', 'X4.V1.524', 'X18.V1.324', 'X2.V1.593', 'X21.V1.874', 'X2.V1.3', 'X12.V1.317', 'X16.V1.254', 'X2.V1.954', 'X10.V1.574']
+
+
+
+Mean ROC AUC = 0.9566 ± 0.0064
+
+
+===== SUMMARY =====
+ACC : 0.9159 ± 0.0047
+F1  : 0.7700 ± 0.0133
+AUC : 0.9566 ± 0.0064
+PREC: 0.8473 ± 0.0362
+REC : 0.7071 ± 0.0229
+Average Confusion Matrix:
+ [[321  10]
+ [ 24  59]]
+
+[Misclassified] Unique subject_ids across folds: 174
+Top-10 most frequent misclassified subject_ids (id, count):
+  X7.V1.134: 1
+  X17.V1.224: 1
+  X5.V1.274: 1
+  X10.V1.717: 1
+  X7.V1.504: 1
+  X6.V1.711: 1
+  X22.V1.834: 1
+  X15.V1.723: 1
+  X13.V1.874: 1
+  X1.V1.684: 1
+
+=== DWT(db4,L3) | IQCNNNet | gated ===
+[Fold 1] ACC=0.9638 F1=0.8993 AUC=0.9924 PREC=0.9178 REC=0.8816 | Time=151.9s PeakMem=60.6MB
+              precision    recall  f1-score   support
+
+           0     0.9736    0.9822    0.9779       338
+           1     0.9178    0.8816    0.8993        76
+
+    accuracy                         0.9638       414
+   macro avg     0.9457    0.9319    0.9386       414
+weighted avg     0.9634    0.9638    0.9635       414
+
+CM:
+ [[332   6]
+ [  9  67]]
+Misclassified subject_ids: ['X7.V1.814', 'X7.V1.504', 'X22.V1.834', 'X1.V1.914', 'X2.V1.634', 'X19.V1.412', 'X4.V1.616', 'X20.V1.381', 'X19.V1.834', 'X21.V1.753', 'X17.V1.894', 'X2.V1.824', 'X19.V1.361', 'X17.V1.554', 'X3.V1.284']
+
+[Fold 2] ACC=0.9686 F1=0.9202 AUC=0.9950 PREC=0.9868 REC=0.8621 | Time=153.2s PeakMem=60.4MB
+              precision    recall  f1-score   support
+
+           0     0.9645    0.9969    0.9805       327
+           1     0.9868    0.8621    0.9202        87
+
+    accuracy                         0.9686       414
+   macro avg     0.9757    0.9295    0.9503       414
+weighted avg     0.9692    0.9686    0.9678       414
+
+CM:
+ [[326   1]
+ [ 12  75]]
+Misclassified subject_ids: ['X6.V1.374', 'X15.V1.154', 'X4.V1.204', 'X22.V1.824', 'X13.V1.884', 'X10.V1.384', 'X11.V1.884', 'X21.V1.554', 'X19.V1.684', 'X4.V1.894', 'X12.V1.704', 'X1.V1.593', 'X20.V1.134']
+
+
+[Fold 3] ACC=0.9614 F1=0.9208 AUC=0.9825 PREC=0.8857 REC=0.9588 | Time=183.4s PeakMem=60.3MB
+              precision    recall  f1-score   support
+
+           0     0.9871    0.9621    0.9744       317
+           1     0.8857    0.9588    0.9208        97
+
+    accuracy                         0.9614       414
+   macro avg     0.9364    0.9605    0.9476       414
+weighted avg     0.9633    0.9614    0.9619       414
+
+CM:
+ [[305  12]
+ [  4  93]]
+Misclassified subject_ids: ['X12.V1.714', 'X19.V1.853', 'X23.V1.593', 'X1.V1.204', 'X20.V1.723', 'X17.V1.764', 'X22.V1.371', 'X9.V1.914', 'X9.V1.723', 'X7.V1.914', 'X20.V1.384', 'X12.V1.931', 'X5.V1.504', 'X11.V1.211', 'X4.V1.991', 'X14.V1.814']
+
+[Fold 4] ACC=0.9372 F1=0.8116 AUC=0.9761 PREC=0.8116 REC=0.8116 | Time=159.1s PeakMem=60.2MB
+              precision    recall  f1-score   support
+
+           0     0.9623    0.9623    0.9623       345
+           1     0.8116    0.8116    0.8116        69
+
+    accuracy                         0.9372       414
+   macro avg     0.8870    0.8870    0.8870       414
+weighted avg     0.9372    0.9372    0.9372       414
+
+CM:
+ [[332  13]
+ [ 13  56]]
+Misclassified subject_ids: ['X5.V1.593', 'X4.V1.134', 'X20.V1.203', 'X10.V1.134', 'X15.V1.814', 'X13.V1.834', 'X16.V1.174', 'X10.V1.29', 'X12.V1.723', 'X5.V1.29', 'X9.V1.401', 'X13.V1.144', 'X9.V1.161', 'X13.V1.317', 'X9.V1.116', 'X3.V1.341', 'X3.V1.704', 'X22.V1.317', 'X21.V1.141', 'X22.V1.734', 'X11.V1.161', 'X19.V1.231', 'X5.V1.412', 'X8.V1.154', 'X15.V1.174', 'X7.V1.624']
+
+[Fold 5] ACC=0.9638 F1=0.9102 AUC=0.9885 PREC=0.9383 REC=0.8837 | Time=246.3s PeakMem=60.4MB
+              precision    recall  f1-score   support
+
+           0     0.9700    0.9848    0.9773       328
+           1     0.9383    0.8837    0.9102        86
+
+    accuracy                         0.9638       414
+   macro avg     0.9541    0.9342    0.9437       414
+weighted avg     0.9634    0.9638    0.9634       414
+
+CM:
+ [[323   5]
+ [ 10  76]]
+Misclassified subject_ids: ['X6.V1.203', 'X23.V1.734', 'X22.V1.144', 'X10.V1.374', 'X22.V1.853', 'X14.V1.204', 'X17.V1.814', 'X13.V1.154', 'X19.V1.504', 'X2.V1.114', 'X4.V1.884', 'X23.V1.154', 'X2.V1.593', 'X12.V1.317', 'X2.V1.954']
+
+
+
+Mean ROC AUC = 0.9869 ± 0.0068
+
+
+===== SUMMARY =====
+ACC : 0.9589 ± 0.0111
+F1  : 0.8924 ± 0.0412
+AUC : 0.9869 ± 0.0068
+PREC: 0.9080 ± 0.0583
+REC : 0.8795 ± 0.0474
+Average Confusion Matrix:
+ [[324   7]
+ [ 10  73]]
+
+[Misclassified] Unique subject_ids across folds: 85
+Top-10 most frequent misclassified subject_ids (id, count):
+  X7.V1.814: 1
+  X7.V1.504: 1
+  X22.V1.834: 1
+  X1.V1.914: 1
+  X2.V1.634: 1
+  X19.V1.412: 1
+  X4.V1.616: 1
+  X20.V1.381: 1
+  X19.V1.834: 1
+  X21.V1.753: 1
+
+=== DWT-DENOISE(db4,L3) | IQCNNNet | gated ===
+[Fold 1] ACC=0.9831 F1=0.9554 AUC=0.9967 PREC=0.9259 REC=0.9868 | Time=390.9s PeakMem=60.3MB
+              precision    recall  f1-score   support
+
+           0     0.9970    0.9822    0.9896       338
+           1     0.9259    0.9868    0.9554        76
+
+    accuracy                         0.9831       414
+   macro avg     0.9615    0.9845    0.9725       414
+weighted avg     0.9840    0.9831    0.9833       414
+
+CM:
+ [[332   6]
+ [  1  75]]
+Misclassified subject_ids: ['X7.V1.134', 'X7.V1.933', 'X7.V1.814', 'X15.V1.723', 'X1.V1.914', 'X21.V1.753', 'X10.V1.303']
+
+
+[Fold 2] ACC=0.9807 F1=0.9535 AUC=0.9969 PREC=0.9647 REC=0.9425 | Time=341.4s PeakMem=60.4MB
+              precision    recall  f1-score   support
+
+           0     0.9848    0.9908    0.9878       327
+           1     0.9647    0.9425    0.9535        87
+
+    accuracy                         0.9807       414
+   macro avg     0.9748    0.9667    0.9706       414
+weighted avg     0.9806    0.9807    0.9806       414
+
+CM:
+ [[324   3]
+ [  5  82]]
+Misclassified subject_ids: ['X15.V1.154', 'X21.V1.592', 'X13.V1.412', 'X22.V1.824', 'X13.V1.884', 'X10.V1.384', 'X21.V1.554', 'X1.V1.593']
+
+[Fold 3] ACC=0.9614 F1=0.9184 AUC=0.9927 PREC=0.9091 REC=0.9278 | Time=215.3s PeakMem=60.3MB
+              precision    recall  f1-score   support
+
+           0     0.9778    0.9716    0.9747       317
+           1     0.9091    0.9278    0.9184        97
+
+    accuracy                         0.9614       414
+   macro avg     0.9434    0.9497    0.9465       414
+weighted avg     0.9617    0.9614    0.9615       414
+
+CM:
+ [[308   9]
+ [  7  90]]
+Misclassified subject_ids: ['X22.V1.954', 'X1.V1.204', 'X20.V1.723', 'X17.V1.764', 'X4.V1.231', 'X9.V1.914', 'X9.V1.723', 'X19.V1.954', 'X7.V1.914', 'X3.V1.451', 'X20.V1.384', 'X12.V1.931', 'X21.V1.303', 'X9.V1.764', 'X7.V1.384', 'X14.V1.814']
+
+
+[Fold 4] ACC=0.9614 F1=0.8857 AUC=0.9938 PREC=0.8732 REC=0.8986 | Time=213.8s PeakMem=60.5MB
+              precision    recall  f1-score   support
+
+           0     0.9796    0.9739    0.9767       345
+           1     0.8732    0.8986    0.8857        69
+
+    accuracy                         0.9614       414
+   macro avg     0.9264    0.9362    0.9312       414
+weighted avg     0.9619    0.9614    0.9616       414
+
+CM:
+ [[336   9]
+ [  7  62]]
+Misclassified subject_ids: ['X5.V1.593', 'X4.V1.134', 'X20.V1.203', 'X15.V1.814', 'X6.V1.32', 'X18.V1.764', 'X2.V1.814', 'X12.V1.723', 'X7.V1.494', 'X13.V1.317', 'X3.V1.704', 'X9.V1.603', 'X5.V1.412', 'X8.V1.154', 'X7.V1.624', 'X20.V1.971']
+
+
+[Fold 5] ACC=0.9686 F1=0.9249 AUC=0.9916 PREC=0.9195 REC=0.9302 | Time=331.9s PeakMem=60.3MB
+              precision    recall  f1-score   support
+
+           0     0.9817    0.9787    0.9802       328
+           1     0.9195    0.9302    0.9249        86
+
+    accuracy                         0.9686       414
+   macro avg     0.9506    0.9544    0.9525       414
+weighted avg     0.9687    0.9686    0.9687       414
+
+CM:
+ [[321   7]
+ [  6  80]]
+Misclassified subject_ids: ['X6.V1.203', 'X6.V1.303', 'X17.V1.634', 'X12.V1.941', 'X22.V1.853', 'X17.V1.814', 'X13.V1.154', 'X4.V1.384', 'X23.V1.154', 'X2.V1.593', 'X16.V1.414', 'X12.V1.317', 'X2.V1.954']
+
+
+
+Mean ROC AUC = 0.9943 ± 0.0021
+
+
+===== SUMMARY =====
+ACC : 0.9710 ± 0.0093
+F1  : 0.9276 ± 0.0257
+AUC : 0.9943 ± 0.0021
+PREC: 0.9185 ± 0.0294
+REC : 0.9372 ± 0.0287
+Average Confusion Matrix:
+ [[324   7]
+ [  5  78]]
+
+[Misclassified] Unique subject_ids across folds: 60
+Top-10 most frequent misclassified subject_ids (id, count):
+  X7.V1.134: 1
+  X7.V1.933: 1
+  X7.V1.814: 1
+  X15.V1.723: 1
+  X1.V1.914: 1
+  X21.V1.753: 1
+  X10.V1.303: 1
+  X15.V1.154: 1
+  X21.V1.592: 1
+  X13.V1.412: 1
+
+=== MSPCA-style(db4,L3,k=3) | IQCNNNet | gated ===
+[Fold 1] ACC=0.9565 F1=0.8816 AUC=0.9920 PREC=0.8816 REC=0.8816 | Time=270.8s PeakMem=60.7MB
+              precision    recall  f1-score   support
+
+           0     0.9734    0.9734    0.9734       338
+           1     0.8816    0.8816    0.8816        76
+
+    accuracy                         0.9565       414
+   macro avg     0.9275    0.9275    0.9275       414
+weighted avg     0.9565    0.9565    0.9565       414
+
+CM:
+ [[329   9]
+ [  9  67]]
+Misclassified subject_ids: ['X7.V1.814', 'X7.V1.504', 'X22.V1.834', 'X15.V1.723', 'X13.V1.804', 'X3.V1.141', 'X3.V1.317', 'X5.V1.371', 'X4.V1.616', 'X17.V1.751', 'X3.V1.616', 'X19.V1.834', 'X21.V1.753', 'X19.V1.361', 'X17.V1.554', 'X3.V1.991', 'X19.V1.931', 'X1.V1.516']
+
+
+
+[Fold 2] ACC=0.9686 F1=0.9212 AUC=0.9969 PREC=0.9744 REC=0.8736 | Time=279.2s PeakMem=60.3MB
+              precision    recall  f1-score   support
+
+           0     0.9673    0.9939    0.9804       327
+           1     0.9744    0.8736    0.9212        87
+
+    accuracy                         0.9686       414
+   macro avg     0.9708    0.9337    0.9508       414
+weighted avg     0.9688    0.9686    0.9680       414
+
+CM:
+ [[325   2]
+ [ 11  76]]
+Misclassified subject_ids: ['X6.V1.374', 'X15.V1.154', 'X4.V1.204', 'X13.V1.884', 'X10.V1.384', 'X11.V1.884', 'X21.V1.554', 'X9.V1.284', 'X4.V1.894', 'X12.V1.704', 'X2.V1.751', 'X21.V1.684', 'X9.V1.361']
+
+
+[Fold 3] ACC=0.9517 F1=0.9010 AUC=0.9917 PREC=0.8667 REC=0.9381 | Time=495.7s PeakMem=60.2MB
+              precision    recall  f1-score   support
+
+           0     0.9806    0.9558    0.9681       317
+           1     0.8667    0.9381    0.9010        97
+
+    accuracy                         0.9517       414
+   macro avg     0.9236    0.9470    0.9345       414
+weighted avg     0.9539    0.9517    0.9523       414
+
+CM:
+ [[303  14]
+ [  6  91]]
+Misclassified subject_ids: ['X19.V1.853', 'X23.V1.593', 'X20.V1.231', 'X20.V1.723', 'X17.V1.764', 'X22.V1.371', 'X9.V1.914', 'X9.V1.723', 'X9.V1.704', 'X7.V1.914', 'X1.V1.444', 'X20.V1.384', 'X12.V1.931', 'X5.V1.504', 'X18.V1.131', 'X11.V1.211', 'X4.V1.991', 'X7.V1.384', 'X9.V1.141', 'X14.V1.814']
+
+
+[Fold 4] ACC=0.9541 F1=0.8593 AUC=0.9882 PREC=0.8788 REC=0.8406 | Time=558.3s PeakMem=60.5MB
+              precision    recall  f1-score   support
+
+           0     0.9684    0.9768    0.9726       345
+           1     0.8788    0.8406    0.8593        69
+
+    accuracy                         0.9541       414
+   macro avg     0.9236    0.9087    0.9159       414
+weighted avg     0.9535    0.9541    0.9537       414
+
+CM:
+ [[337   8]
+ [ 11  58]]
+Misclassified subject_ids: ['X5.V1.593', 'X4.V1.134', 'X20.V1.203', 'X10.V1.134', 'X15.V1.814', 'X13.V1.834', 'X16.V1.174', 'X12.V1.723', 'X9.V1.401', 'X13.V1.144', 'X9.V1.161', 'X13.V1.317', 'X3.V1.704', 'X22.V1.317', 'X22.V1.734', 'X11.V1.161', 'X5.V1.412', 'X8.V1.154', 'X15.V1.174']
+
+
+
+[Fold 5] ACC=0.9517 F1=0.8795 AUC=0.9893 PREC=0.9125 REC=0.8488 | Time=301.1s PeakMem=60.5MB
+              precision    recall  f1-score   support
+
+           0     0.9611    0.9787    0.9698       328
+           1     0.9125    0.8488    0.8795        86
+
+    accuracy                         0.9517       414
+   macro avg     0.9368    0.9137    0.9247       414
+weighted avg     0.9510    0.9517    0.9510       414
+
+CM:
+ [[321   7]
+ [ 13  73]]
+Misclassified subject_ids: ['X6.V1.203', 'X21.V1.634', 'X23.V1.734', 'X22.V1.144', 'X1.V1.910', 'X10.V1.412', 'X10.V1.374', 'X23.V1.894', 'X9.V1.774', 'X22.V1.853', 'X14.V1.204', 'X17.V1.814', 'X13.V1.154', 'X19.V1.504', 'X4.V1.884', 'X23.V1.154', 'X5.V1.141', 'X2.V1.593', 'X12.V1.317', 'X2.V1.954']
+
+
+
+Mean ROC AUC = 0.9916 ± 0.0030
+
+
+===== SUMMARY =====
+ACC : 0.9565 ± 0.0063
+F1  : 0.8885 ± 0.0210
+AUC : 0.9916 ± 0.0030
+PREC: 0.9028 ± 0.0389
+REC : 0.8765 ± 0.0343
+Average Confusion Matrix:
+ [[323   8]
+ [ 10  73]]
+
+[Misclassified] Unique subject_ids across folds: 90
+Top-10 most frequent misclassified subject_ids (id, count):
+  X7.V1.814: 1
+  X7.V1.504: 1
+  X22.V1.834: 1
+  X15.V1.723: 1
+  X13.V1.804: 1
+  X3.V1.141: 1
+  X3.V1.317: 1
+  X5.V1.371: 1
+  X4.V1.616: 1
+  X17.V1.751: 1
+
+=== RAW | CNN ===
+
+[Fold 1] ACC=0.9541 F1=0.8690 AUC=0.9838 PREC=0.9130 REC=0.8289 | Time=15.5s PeakMem=6.6MB
+              precision    recall  f1-score   support
+
+           0     0.9623    0.9822    0.9722       338
+           1     0.9130    0.8289    0.8690        76
+
+    accuracy                         0.9541       414
+   macro avg     0.9377    0.9056    0.9206       414
+weighted avg     0.9533    0.9541    0.9532       414
+
+CM:
+ [[332   6]
+ [ 13  63]]
+Misclassified subject_ids: ['X7.V1.134', 'X3.V1.884', 'X7.V1.814', 'X7.V1.504', 'X22.V1.834', 'X4.V1.533', 'X1.V1.684', 'X1.V1.914', 'X3.V1.317', 'X18.V1.554', 'X8.V1.684', 'X19.V1.834', 'X1.V1.764', 'X21.V1.753', 'X23.V1.724', 'X2.V1.824', 'X3.V1.284', 'X18.V1.932', 'X10.V1.303']
+
+
+
+[Fold 2] ACC=0.9614 F1=0.9012 AUC=0.9933 PREC=0.9733 REC=0.8391 | Time=13.7s PeakMem=6.5MB
+              precision    recall  f1-score   support
+
+           0     0.9587    0.9939    0.9760       327
+           1     0.9733    0.8391    0.9012        87
+
+    accuracy                         0.9614       414
+   macro avg     0.9660    0.9165    0.9386       414
+weighted avg     0.9618    0.9614    0.9603       414
+
+CM:
+ [[325   2]
+ [ 14  73]]
+Misclassified subject_ids: ['X6.V1.374', 'X15.V1.154', 'X4.V1.954', 'X22.V1.824', 'X13.V1.884', 'X10.V1.384', 'X11.V1.884', 'X21.V1.554', 'X19.V1.684', 'X12.V1.283', 'X4.V1.894', 'X1.V1.824', 'X12.V1.704', 'X1.V1.593', 'X23.V1.824', 'X17.V1.444']
+
+
+
+[Fold 3] ACC=0.9420 F1=0.8710 AUC=0.9843 PREC=0.9101 REC=0.8351 | Time=13.0s PeakMem=6.4MB
+              precision    recall  f1-score   support
+
+           0     0.9508    0.9748    0.9626       317
+           1     0.9101    0.8351    0.8710        97
+
+    accuracy                         0.9420       414
+   macro avg     0.9304    0.9049    0.9168       414
+weighted avg     0.9412    0.9420    0.9411       414
+
+CM:
+ [[309   8]
+ [ 16  81]]
+Misclassified subject_ids: ['X12.V1.714', 'X2.V1.804', 'X23.V1.593', 'X22.V1.744', 'X22.V1.954', 'X3.V1.734', 'X3.V1.203', 'X20.V1.723', 'X20.V1.434', 'X17.V1.764', 'X9.V1.914', 'X9.V1.723', 'X6.V1.734', 'X19.V1.954', 'X7.V1.914', 'X10.V1.734', 'X5.V1.616', 'X1.V1.444', 'X17.V1.462', 'X17.V1.684', 'X5.V1.504', 'X8.V1.824', 'X17.V1.134', 'X7.V1.384']
+
+
+
+[Fold 4] ACC=0.9614 F1=0.8806 AUC=0.9873 PREC=0.9077 REC=0.8551 | Time=17.8s PeakMem=6.4MB
+              precision    recall  f1-score   support
+
+           0     0.9713    0.9826    0.9769       345
+           1     0.9077    0.8551    0.8806        69
+
+    accuracy                         0.9614       414
+   macro avg     0.9395    0.9188    0.9288       414
+weighted avg     0.9607    0.9614    0.9609       414
+
+CM:
+ [[339   6]
+ [ 10  59]]
+Misclassified subject_ids: ['X5.V1.593', 'X4.V1.134', 'X10.V1.134', 'X15.V1.814', 'X18.V1.134', 'X13.V1.834', 'X18.V1.764', 'X12.V1.723', 'X4.V1.554', 'X3.V1.341', 'X22.V1.317', 'X22.V1.734', 'X5.V1.634', 'X8.V1.154', 'X3.V1.814', 'X18.V1.853']
+
+
+
+[Fold 5] ACC=0.9614 F1=0.9012 AUC=0.9906 PREC=0.9605 REC=0.8488 | Time=19.5s PeakMem=6.4MB
+              precision    recall  f1-score   support
+
+           0     0.9615    0.9909    0.9760       328
+           1     0.9605    0.8488    0.9012        86
+
+    accuracy                         0.9614       414
+   macro avg     0.9610    0.9198    0.9386       414
+weighted avg     0.9613    0.9614    0.9604       414
+
+CM:
+ [[325   3]
+ [ 13  73]]
+Misclassified subject_ids: ['X21.V1.634', 'X23.V1.734', 'X22.V1.144', 'X17.V1.634', 'X20.V1.204', 'X9.V1.774', 'X22.V1.853', 'X13.V1.154', 'X4.V1.384', 'X2.V1.114', 'X4.V1.884', 'X7.V1.884', 'X23.V1.154', 'X2.V1.593', 'X9.V1.644', 'X2.V1.954']
+
+
+
+Mean ROC AUC = 0.9878 ± 0.0037
+
+
+===== SUMMARY =====
+ACC : 0.9560 ± 0.0075
+F1  : 0.8846 ± 0.0141
+AUC : 0.9878 ± 0.0037
+PREC: 0.9329 ± 0.0281
+REC : 0.8414 ± 0.0094
+Average Confusion Matrix:
+ [[326   5]
+ [ 13  70]]
+
+[Misclassified] Unique subject_ids across folds: 91
+Top-10 most frequent misclassified subject_ids (id, count):
+  X7.V1.134: 1
+  X3.V1.884: 1
+  X7.V1.814: 1
+  X7.V1.504: 1
+  X22.V1.834: 1
+  X4.V1.533: 1
+  X1.V1.684: 1
+  X1.V1.914: 1
+  X3.V1.317: 1
+  X18.V1.554: 1
+
+== Forked(gated)-DWT vs CNN-DWT | AUC ==
+Paired t-test: t=-1.230, p=0.2862 | Wilcoxon: W=5.000, p=0.6250
+
+== Forked(gated)-DWT vs IQCNN-DWT | AUC ==
+Paired t-test: t=6.016, p=0.0038 | Wilcoxon: W=0.000, p=0.0625
+
+== Forked(gated)-DWT vs Forked(gated)-DWT-DENOISE | AUC ==
+Paired t-test: t=-2.525, p=0.0650 | Wilcoxon: W=0.000, p=0.0625
+
+== Forked(gated)-DWT vs Forked(gated)-MSPCA | AUC ==
+Paired t-test: t=-1.896, p=0.1309 | Wilcoxon: W=1.000, p=0.1250
+
+===== GLOBAL SUMMARY (Means ± Std over 5 folds) =====
+                                        Model              ACC  \
+0                           DWT(db4,L3) | CNN  0.9570 ± 0.0056   
+1                         DWT(db4,L3) | IQCNN  0.9159 ± 0.0047   
+2              DWT(db4,L3) | IQCNNNet (gated)  0.9589 ± 0.0111   
+3      DWT-DENOISE(db4,L3) | IQCNNNet (gated)  0.9710 ± 0.0093   
+4  MSPCA-style(db4,L3,k=3) | IQCNNNet (gated)  0.9565 ± 0.0063   
+5                                   RAW | CNN  0.9560 ± 0.0075   
+
+                F1              AUC             PREC              REC  
+0  0.8881 ± 0.0219  0.9904 ± 0.0039  0.9150 ± 0.0356  0.8637 ± 0.0268  
+1  0.7700 ± 0.0133  0.9566 ± 0.0064  0.8473 ± 0.0362  0.7071 ± 0.0229  
+2  0.8924 ± 0.0412  0.9869 ± 0.0068  0.9080 ± 0.0583  0.8795 ± 0.0474  
+3  0.9276 ± 0.0257  0.9943 ± 0.0021  0.9185 ± 0.0294  0.9372 ± 0.0287  
+4  0.8885 ± 0.0210  0.9916 ± 0.0030  0.9028 ± 0.0389  0.8765 ± 0.0343  
+5  0.8846 ± 0.0141  0.9878 ± 0.0037  0.9329 ± 0.0281  0.8414 ± 0.0094  
